@@ -1,1 +1,26 @@
-<p>welcome works!</p>
+<div class="row">
+  <div class="col-12" style="margin-top: 50px;">
+    <h1 style="text-align: center;">Welcome to TraffiSense</h1>
+  </div>
+</div>
+<div class="row">
+  <form class="col-4 offset-4"  style="margin-top: 50px;" action="http://localhost:8080/front" method="POST">
+    <div class="form-group">
+      <label style="text-align: center;width: 100%" for="exampleFormControlSelect1">Select your Zone</label>
+      <select name="zone" class="form-control" id="exampleFormControlSelect1">
+        <option>North Zone</option>
+        <option>West Zone</option>
+        <option>South Zone</option>
+        <option>South Western Zone</option>
+        <option>East Zone</option>
+      </select>
+      <br>
+      <br>
+      <label style="text-align: center;width: 100%" for="numberInput">Enter the traffic post ID</label>
+      <input type="number" name="pid" id="numberInput" style="width:100%;" required>
+      <br>
+      <br>
+      <button type="submit" class="btn btn-outline-success btn-lg col-6 offset-3 col-md-4 offset-md-4">Show Data</button>
+    </div>
+  </form>
+</div>

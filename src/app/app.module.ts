@@ -8,6 +8,7 @@ import { MenubarComponent } from './menubar/menubar.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { BlankComponent } from './blank/blank.component';
 import { LoginComponent } from './login/login.component';
+import { GraphComponent } from './graph/graph.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { LoginComponent } from './login/login.component';
     MenubarComponent,
     WelcomeComponent,
     BlankComponent,
-    LoginComponent
+    LoginComponent,
+    GraphComponent
   ],
   entryComponents:[
     AppComponent,

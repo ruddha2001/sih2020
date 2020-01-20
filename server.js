@@ -2,7 +2,18 @@ const axios = require("axios");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const express = require("express");
+const multer = require("multer");
 const path = require("path");
+
+const mysql = require("mysql");
+
+const con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "SuperUser@2020"
+});
+
+const upload = multer();
 
 const app = express(); //Creating an Express App
 
@@ -10,6 +21,7 @@ const app = express(); //Creating an Express App
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(upload.array());
 
 // Serve only the static files form the dist directory
 app.use(express.static(__dirname + "/dist/sih2020"));
@@ -35,6 +47,23 @@ app.get("/weather", function(req, res) {
     .catch(function(error) {
       return console.log(error);
     });
+});
+
+app.post("/front", function(req, res) {
+  console.log(req.body);
+  res.redirect("http://localhost:4200/graph");
+});
+
+app.get("/speedlimit", function(req, res) {
+  let pid = req.query.pid;
+  con.query(
+    "SELECT * FROM `sys`.`speedLogs` WHERE `pid`= "+pid+" ORDER BY `row` DESC LIMIT 1",
+    function(err, result, fields) {
+      if (err) throw err;
+      console.log(result[0].speedLimit);
+      res.send(JSON.stringify(result[0].speedLimit));
+    }
+  );
 });
 
 let port = 8080;
