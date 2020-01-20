@@ -33,10 +33,15 @@ app.get("/weather", function(req, res) {
     });
 });
 
-app.get("/condition", function(req, res) {
-  if (req.query.roadName == "College Road") res.send("Good");
-  else res.send("Road Not Listed in Database");
-});
+// app.get("/condition", function(req, res) {
+//   if (req.query.roadName == "College Road") res.send("Good");
+//   else res.send("Road Not Listed in Database");
+// });
+
+// app.get("/zone",function(req,res){
+//   if (req.query.zone == "School") res.send("School");
+//   else res.send == "Normal";
+// })
 
 let port = 8080;
 app.listen(port, function(err) {
