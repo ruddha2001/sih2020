@@ -33,25 +33,21 @@ app.get("/speedlimit", function(req, res) {
     result.toArray(function(err, results) {
       if (err) return console.log(err);
       let finalData = results[0];
-      console.log(finalData);
       axios
         .get("http://localhost:8080/weather?city=" + finalData.city)
         .then(function(response) {
           console.log(response.data);
+          console.log(finalData.condition);
+          console.log(finalData.zone);
+          let date_ob = new Date();
+          console.log(date_ob);
         })
         .catch(function(err) {
           if (err) return console.log(err);
         });
-
-      let condition = finalData.condition;
-
-      let zone = finalData.zone;
-
-      console.log("condition=" + condition);
-      console.log("zone=" + zone);
     });
   });
-  res.send("Hello World");
+  res.send("Gita Chutiya Nahi Hy");
 });
 
 app.listen(9000, function(err) {

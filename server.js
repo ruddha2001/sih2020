@@ -18,6 +18,10 @@ app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname + "/dist/sih2020/index.html"));
 });
 
+app.get("/loginstatus", function(req, res) {
+  res.sendStatus(300);
+});
+
 app.get("/weather", function(req, res) {
   axios
     .get(
@@ -32,16 +36,6 @@ app.get("/weather", function(req, res) {
       return console.log(error);
     });
 });
-
-// app.get("/condition", function(req, res) {
-//   if (req.query.roadName == "College Road") res.send("Good");
-//   else res.send("Road Not Listed in Database");
-// });
-
-// app.get("/zone",function(req,res){
-//   if (req.query.zone == "School") res.send("School");
-//   else res.send == "Normal";
-// })
 
 let port = 8080;
 app.listen(port, function(err) {

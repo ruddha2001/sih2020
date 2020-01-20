@@ -1,1 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+
+.row{
+    margin: 0 !important;
+    width: 100% !important;
+}
