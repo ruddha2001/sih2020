@@ -1,3 +1,4 @@
+const axios = require("axios");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const express = require("express");
@@ -15,6 +16,26 @@ app.use(express.static(__dirname + "/dist/sih2020"));
 
 app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname + "/dist/sih2020/index.html"));
+});
+
+app.get("/weather", function(req, res) {
+  axios
+    .get(
+      "http://api.openweathermap.org/data/2.5/weather?APPID=02baf8d8f23b2aa7f426a50995e39b45&q=" +
+        req.query.city +
+        ",in"
+    )
+    .then(function(response) {
+      res.send(response.data);
+    })
+    .catch(function(error) {
+      return console.log(error);
+    });
+});
+
+app.get("/condition", function(req, res) {
+  if (req.query.roadName == "College Road") res.send("Good");
+  else res.send("Road Not Listed in Database");
 });
 
 let port = 8080;
