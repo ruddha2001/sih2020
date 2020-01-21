@@ -17,6 +17,8 @@ const upload = multer();
 
 const app = express(); //Creating an Express App
 
+let x=1;
+
 //Using the middlewares for various functionalities
 app.use(cors());
 app.use(bodyParser.json());
@@ -49,22 +51,27 @@ app.get("/weather", function(req, res) {
     });
 });
 
-app.post("/front", function(req, res) {
-  console.log(req.body);
-  res.redirect("http://localhost:4200/graph");
-});
 
 app.get("/speedlimit", function(req, res) {
-  let pid = req.query.pid;
   con.query(
-    "SELECT * FROM `sys`.`speedLogs` WHERE `pid`= "+pid+" ORDER BY `row` DESC LIMIT 1",
+    "SELECT * FROM `sys`.`speedLogs` WHERE `pid`= "+req.query.pid+" ORDER BY `row` DESC LIMIT 1",
     function(err, result, fields) {
       if (err) throw err;
-      console.log(result[0].speedLimit);
+      //console.log(result[0].speedLimit);
       res.send(JSON.stringify(result[0].speedLimit));
     }
   );
 });
+
+app.get("/chartinit",function(req,res){
+  res.send([[x++,4],[x++,6],[x++,4],[x++,3],[x++,5],[x++,4],[x++,3],[x++,2],[x++,4],[x++,6],[x++,5],[x++,6],[x++,7],[x++,9],[x++,7],[x++,5],[x++,6],[x++,7],[x++,9],[x++,8]]);
+})
+
+app.get("/chartapi",function(req,res){
+  con.query("SELECT * FROM `sys`.`rawLogs` ORDER BY `row` DESC LIMIT 1",function(err,result,fields){
+    res.send([[x++,result[0].density]]);
+  });
+})
 
 let port = 8080;
 app.listen(port, function(err) {

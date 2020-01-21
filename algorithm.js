@@ -34,6 +34,7 @@ const obj = client.db("roadDatabase").collection("data"); //Creating a MongoDB o
 
 const app = express();
 
+//Using middlewares for functionalities
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -43,18 +44,13 @@ app.set("trust proxy", 1);
 //Express Rate Limit
 app.use("/speedlimit", apiLimiter);
 
-app.post("/opencvtest", function(req, res) {
-  console.log(req.body);
-  res.send("Accepted");
-});
-
+//Post request from YOLOv3
 app.post("/opencv", function(req, res) {
-  let id = req.query.postid;
-  let td = req.query.td;
-  let pd = req.query.pd;
+  let id = req.body.postid;
+  let count = req.body.count;
   con.query(
-    "INSERT INTO `sys`.`rawLogs`(`row`,`trafficDensity`,`pedDensity`,`pid`) VALUES(NULL,?,?,?)",
-    [td, pd, id],
+    "INSERT INTO `sys`.`rawLogs`(`row`,`density`,`pid`) VALUES(NULL,?,?)",
+    [count, id],
     function(err, result, fields) {
       if (err) throw err;
       console.log("MySQL Rows Affected rawLogs = " + result.affectedRows);
@@ -70,19 +66,53 @@ app.post("/opencv", function(req, res) {
       axios
         .get("http://localhost:8080/weather?city=" + finalData.city)
         .then(function(response) {
-          console.log(response.data);
-          console.log(finalData.condition);
-          console.log(finalData.zone);
-          let date_ob = new Date();
-          console.log(date_ob);
-
           let finalSpeed;
           let baseSpeed = 20;
           let factor = 5;
 
-          if (finalData.zone == "School") factor = factor - 0.5;
+          //Algorithmic Calculations
+          if (finalData.condition == "Expressway") {
+            finalSpeed = 120;
+          } else if (finalData.condition == "Highway") {
+            finalSpeed = 100;
+          } else {
+            finalSpeed = 80;
+          }
 
-          finalSpeed = baseSpeed * factor;
+          if (finalData.zone == "School" || finalData.zone == "Hospital") {
+            factor = factor - 0.75;
+          }
+
+          if (
+            response.data["weather"][0].main == "Mist" ||
+            response.data["weather"][0].main == "Rain"
+          ) {
+            factor = factor - 1;
+          } else if (response.data["weather"][0].main == "Snow") {
+            factor = factor - 1.25;
+          }
+
+          if (response.data["visibility"] <= 1000) {
+            factor = factor - 2;
+          } else if (
+            response.data["visibility"] >= 1001 &&
+            response.data["visibility"] <= 3000
+          ) {
+            factor = factor - 1;
+          }
+
+          if (count <= 5) {
+            factor = factor + 0.5;
+          } else if (count >= 6 && count <= 10) {
+            factor = factor - 1;
+          } else {
+            factor = factor - 1.5;
+          }
+
+          if (finalSpeed > baseSpeed * factor) {
+            finalSpeed = baseSpeed * factor;
+          }
+
           console.log(finalSpeed);
           con.query(
             "INSERT INTO `sys`.`speedLogs`(`row`,`speedLimit`,`pid`,`timeStamp`) VALUES(NULL,?,?,CURRENT_TIMESTAMP())",
@@ -103,6 +133,26 @@ app.post("/opencv", function(req, res) {
   res.send("Accepted");
 });
 
+//POST request from Welcome page of the dashboard
+app.post("/front", function(req, res) {
+  obj.find({ postid: req.body.pid }, function(err, result) {
+    if (err) return console.log(err);
+
+    result.toArray(function(err, results) {
+      if (err) return console.log(err);
+      let finalData = results[0];
+      axios
+        .get("http://localhost:8080/weather?city=" + finalData.city)
+        .then(function(response) {
+          res.redirect("http://localhost:4200/graph?pid="+req.body.pid+"&weather="+response.data["weather"][0].main+"&roadCondition="+finalData.condition+"&visibility="+response.data["visibility"]);
+        });
+    });
+  });
+  console.log(req.body);
+});
+
+
+//Listening on Port 9000
 app.listen(9000, function(err) {
   if (err) return console.log(err);
   console.log("Algorithm Server started on Port 9000");

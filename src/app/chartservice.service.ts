@@ -10,6 +10,6 @@ export class ChartService {
   constructor(private http: HttpClient) { }
 
   getValue(){
-    return this.http.get("http://localhost:8000/chartapi");
+    return this.http.get("http://localhost:8080/speedlimit?pid=102");
   }
 }

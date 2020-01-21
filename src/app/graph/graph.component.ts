@@ -1,8 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import * as CanvasJS from "./canvasjs.min";
 import { ChartService } from "../chartservice.service";
-import { HttpClient } from "@angular/common/http";
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from "@angular/router";
+import * as $ from "jquery";
 
 @Component({
   selector: "app-graph",
@@ -12,105 +12,73 @@ import { ActivatedRoute } from '@angular/router';
 export class GraphComponent implements OnInit {
   value: Object;
 
-  pidDisplay="";
+  temp: Object;
 
-  constructor(private http: HttpClient, private route: ActivatedRoute) {}
+  pidDisplay = "";
+  speedLimit : Object;
+  weather = "";
+  visibility = "";
+  roadCondition = "";
+
+  constructor(private route: ActivatedRoute, private data: ChartService) {}
 
   ngOnInit() {
-    this.pidDisplay= this.route.snapshot.queryParamMap.get('pid');
-    //Chart 1
-    var dps = []; // dataPoints
-    var chart = new CanvasJS.Chart("chartContainer", {
+
+    this.data.getValue().subscribe(data=>{
+      this.speedLimit=data;
+    })
+
+    this.pidDisplay=this.route.snapshot.queryParamMap.get('pid');
+    this.weather=this.route.snapshot.queryParamMap.get('weather');
+    this.roadCondition=this.route.snapshot.queryParamMap.get('roadCondition');
+    this.visibility=this.route.snapshot.queryParamMap.get('visibility');
+
+    let dataPoints = [];
+    let dpsLength = 0;
+    let chart = new CanvasJS.Chart("chartContainer", {
+      exportEnabled: true,
       title: {
-        text: "Traffic Density"
+        text: "Congestion Density"
       },
-      height: 250,
-      axisY: {
-        includeZero: false
-      },
+      height: 500,
       data: [
         {
           type: "spline",
-          dataPoints: dps
+          dataPoints: dataPoints
         }
       ]
     });
 
-    var xVal = 0;
-    var yVal = 100;
-    var updateInterval = 15000;
-    var dataLength = 20; // number of dataPoints visible at any point
-
-    var updateChart = function(count) {
-      count = count || 1;
-
-      for (var j = 0; j < count; j++) {
-        yVal = Math.floor(Math.random() * 100) + 1;
-        dps.push({
-          x: xVal,
-          y: yVal
+    $.getJSON(
+      "http://localhost:8080/chartinit",
+      function(data) {
+        $.each(data, function(key, value) {
+          dataPoints.push({ x: value[0], y: parseInt(value[1]) });
         });
-        xVal++;
+        dpsLength = dataPoints.length;
+        chart.render();
+        updateChart();
       }
+    );
+    function updateChart() {
+      $.getJSON("http://localhost:8080/chartapi", function(data) {
+        console.log(data);
+        $.each(data, function(key, value) {
+          dataPoints.push({
+            x: parseInt(value[0]),
+            y: parseInt(value[1])
+          });
+          dpsLength++;
+        });
 
-      if (dps.length > dataLength) {
-        dps.shift();
-      }
-
-      chart.render();
-    };
-
-    updateChart(dataLength);
-    setInterval(function() {
-      updateChart(0);
-    }, updateInterval);
-
-
-  //Chart 2
-  var dps2 = []; // dataPoints
-  var chart2 = new CanvasJS.Chart("chartContainer2", {
-    title: {
-      text: "Pedestrian Density"
-    },
-    height: 250,
-    axisY: {
-      includeZero: false
-    },
-    data: [
-      {
-        type: "spline",
-        dataPoints: dps2
-      }
-    ]
-  });
-
-  var xVal2 = 0;
-  var yVal2 = 100;
-  var updateInterval2 = 15000;
-  var dataLength2 = 20; // number of dataPoints visible at any point
-
-  var updateChart2 = function(count) {
-    count = count || 1;
-
-    for (var j = 0; j < count; j++) {
-      yVal2 = Math.floor(Math.random() * 100) + 1;
-      dps2.push({
-        x: xVal2,
-        y: yVal2
+        if (dataPoints.length > 20) {
+          dataPoints.shift();
+        }
+        chart.render();
+        setTimeout(function() {
+          updateChart();
+        }, 15000);
       });
-      xVal2++;
     }
-
-    if (dps2.length > dataLength2) {
-      dps2.shift();
-    }
-
-    chart2.render();
-  };
-
-  updateChart2(dataLength2);
-  setInterval(function() {
-    updateChart2(0);
-  }, updateInterval2);
-}
+  }
 }

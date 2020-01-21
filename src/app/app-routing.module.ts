@@ -1,5 +1,6 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
+import {show} from "./dynamic";
 import { MenubarComponent } from "./menubar/menubar.component";
 import { WelcomeComponent } from "./welcome/welcome.component";
 import { GraphComponent } from "./graph/graph.component";
@@ -12,8 +13,9 @@ let routes: Routes = [
     { path: "graph", component: GraphComponent }
 ];
 
+console.log(show)
 
-let showa = 1;
+let showa = show;
 
 if (showa == 1) {
   routes = [

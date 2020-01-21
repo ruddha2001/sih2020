@@ -6,15 +6,15 @@
   ></div>
 </div>
 <div class="row" class="offset-md-6 offset-0">
-    <h2 style="width: 100%; text-align: center;">Traffic Post #{{pidDisplay}}</h2>
+    <h2 style="width: 100%; text-align: center;"><b>Traffic Post #{{pidDisplay}}</b></h2>
     <br>
     <br>
-    <p style=" width:100%;text-align: center;">Current Speed Limit:<br><br>Weather:<br>Visibility:<br>Road Condition:</p>
-</div>
-<div class="row" style="padding-top: 150px; ">
-  <div
-    id="chartContainer2"
-    style="width: 100%;"
-    class="col-12 offset-0 col-md-4 offset-md-1"
-  ></div>
+    <h4 style=" width:100%;text-align: center;"> Current Speed Limit: {{speedLimit}} km/h</h4>
+    <p style=" width:100%;text-align: center;font-size: 1.2rem;"><br><br>Weather<br>{{weather}}<br><br>Visibility<br>{{visibility}}<br><br>Road Condition<br>{{roadCondition}}</p>
+    <br>
+    <br>
+    <form action="http://localhost:9000/front" method="POST">
+      <input type="hidden" name="pid" value="{{pidDisplay}}">
+      <button type="submit" class="btn btn-warning btn-lg mx-auto d-block d-">Refresh</button>
+    </form>
 </div>
