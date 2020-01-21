@@ -3,15 +3,17 @@
 
 LiquidCrystal lcd(12,11,7,6,5,4);
 RCSwitch mySwitch = RCSwitch();
-int speedLimit;
+int topSpeed;
 
 void setup() {
   Serial.begin(9600);
+  pinMode(9,OUTPUT);
+  analogWrite(9,120);
   mySwitch.enableReceive(0);  // Receiver on interrupt 0 => that is pin #2
-  speedLimit = 0;
+  topSpeed = 0;
   lcd.begin(16, 2);
   lcd.clear();
-  pinMode(A0, OUTPUT);
+  pinMode(A0, INPUT);
   pinMode(A1, OUTPUT);
 }
 
@@ -20,7 +22,7 @@ void loop() {
 
     Serial.print("Received: ");
     topSpeed = mySwitch.getReceivedValue();
-    Serial.println( speedLimit );
+    Serial.println( topSpeed );
     mySwitch.resetAvailable();
 
     int currSpeed = map(analogRead(A0), 0,1023, 0, 150);
@@ -32,12 +34,12 @@ void loop() {
 unsigned long previousMillis = 0;
 int buzState = LOW; 
 
-void operation(int topSpeed, int currSpeed)){
+void operation(int topSpeed, int currSpeed){
   if(currSpeed>topSpeed){
     //BEEP
     unsigned long currentMillis = millis();
 
-    if (currentMillis - previousMillis >= interval) {
+    if (currentMillis - previousMillis >= 300) {
       // save the last time you blinked the LED
       previousMillis = currentMillis;
   
@@ -50,6 +52,9 @@ void operation(int topSpeed, int currSpeed)){
   
       // set the LED with the ledState of the variable:
       digitalWrite(A1, buzState);
+    }
+    else{
+      digitalWrite(A1, LOW);
     }
   }
   refreshLCD(topSpeed, currSpeed);
