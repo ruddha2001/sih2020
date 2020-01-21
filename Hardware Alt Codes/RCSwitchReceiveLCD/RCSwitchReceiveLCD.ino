@@ -1,5 +1,7 @@
 #include <RCSwitch.h>
+#include <LiquidCrystal.h>
 
+LiquidCrystal lcd(12,11,7,6,5,4);
 RCSwitch mySwitch = RCSwitch();
 int speedLimit;
 
@@ -7,6 +9,8 @@ void setup() {
   Serial.begin(9600);
   mySwitch.enableReceive(0);  // Receiver on interrupt 0 => that is pin #2
   speedLimit = 0;
+  lcd.begin(16, 2);
+  lcd.clear();
   pinMode(A0, OUTPUT);
   pinMode(A1, OUTPUT);
 }
