@@ -22,7 +22,7 @@
     "@angular/platform-browser": "~8.2.14",
     "@angular/platform-browser-dynamic": "~8.2.14",
     "@angular/router": "~8.2.14",
-    "axios": "^0.19.1",
+    "axios": "^0.21.1",
     "express-rate-limit": "^5.0.0",
     "jquery": "^3.4.1",
     "mongod": "^2.0.0",
